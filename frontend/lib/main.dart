@@ -1,14 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_clean_architecture/config/routes/routes.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/home/daily_news.dart';
+
 import 'config/theme/app_themes.dart';
 import 'features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'injection_container.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  /*
+  if (kDebugMode) {
+    try {
+      FirebaseFirestore.instance.useFirestoreEmulator('10.0.2.2', 8080);
+      await FirebaseStorage.instance.useStorageEmulator('10.0.2.2', 9199);
+      print('🟢 Conectado a Emuladores de Firebase localmente');
+    } catch (e) {
+      print('🔴 Error conectando a emuladores: $e');
+    }
+  }
+   */
   await initializeDependencies();
 
   runApp(const MyApp());

@@ -141,7 +141,7 @@ class _$ArticleDao extends ArticleDao {
   Future<List<ArticleModel>> getArticles() async {
     return _queryAdapter.queryList('SELECT * FROM article',
         mapper: (Map<String, Object?> row) => ArticleModel(
-            id: row['id'] as int?,
+            id: row['id'] as String?,
             author: row['author'] as String?,
             title: row['title'] as String?,
             description: row['description'] as String?,
