@@ -11,6 +11,7 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 
 import 'features/daily_news/data/data_sources/local/app_database.dart';
 import 'features/daily_news/domain/usecases/create_article.dart';
+import 'features/daily_news/domain/usecases/delete_article.dart';
 import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
@@ -23,7 +24,18 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
   final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   sl.registerSingleton<AppDatabase>(database);
-  sl.registerSingleton<Dio>(Dio());
+  final dio = Dio();
+  dio.interceptors.add(InterceptorsWrapper(
+    onResponse: (response, handler) {
+      // Si la respuesta es un Mapa y tiene el campo 'articles' (NewsAPI)
+      if (response.data is Map && response.data.containsKey('articles')) {
+        // Sacamos la lista del envoltorio y la ponemos como datos principales
+        response.data = response.data['articles'];
+      }
+      return handler.next(response);
+    },
+  ));
+  sl.registerSingleton<Dio>(dio);
 
   // --- FIREBASE DEPENDENCIES ---
   sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
@@ -44,9 +56,10 @@ Future<void> initializeDependencies() async {
   // UseCases
   sl.registerSingleton<CreateArticleUseCase>(CreateArticleUseCase(sl()));
   sl.registerSingleton<UploadImageUseCase>(UploadImageUseCase(sl()));
+  sl.registerSingleton<DeleteArticleUseCase>(DeleteArticleUseCase(sl()));
 
   // Blocs
-  sl.registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl()));
+  sl.registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl(), sl()));
 
   sl.registerFactory<LocalArticleBloc>(
       () => LocalArticleBloc(sl(), sl(), sl()));

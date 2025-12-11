@@ -23,31 +23,21 @@ class FirebaseService {
   }
 
   Future<String> uploadImage(File imageFile) async {
-    print('👉 1. INICIANDO SUBIDA (Versión putData)...');
 
     try {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
       Reference ref = _storage.ref().child('media/articles/$fileName.jpg');
 
-      // CAMBIO CLAVE: Leemos los bytes primero
       Uint8List fileBytes = await imageFile.readAsBytes();
-      print('👉 2. BYTES LEÍDOS: ${fileBytes.length}');
 
-      // Usamos putData en lugar de putFile
       UploadTask uploadTask = ref.putData(
         fileBytes,
         SettableMetadata(contentType: 'image/jpeg'),
       );
 
-      uploadTask.snapshotEvents.listen((event) {
-        print('👉 PROGRESO: ${event.bytesTransferred} / ${event.totalBytes}');
-      });
-
       TaskSnapshot snapshot = await uploadTask;
-      print('👉 3. SUBIDA COMPLETADA. PIDIENDO URL...');
 
       String url = await snapshot.ref.getDownloadURL();
-      print('👉 4. URL OBTENIDA: $url');
       return url;
     } catch (e) {
       print('❌ ERROR EN UPLOAD: $e');
@@ -62,5 +52,11 @@ class FirebaseService {
         .get();
 
     return snapshot.docs.map((doc) => ArticleModel.fromFirebase(doc)).toList();
+  }
+
+  Future<void> deleteArticle(String? articleId) async {
+    if (articleId != null && articleId.isNotEmpty) {
+      await _articlesCollection.doc(articleId).delete();
+    }
   }
 }

@@ -14,4 +14,6 @@ abstract class ArticleRepository {
   Future<DataState<String>> uploadImage(File imageFile);
 
   Future<DataState<void>> createArticle(ArticleEntity article);
+
+  Future<DataState<void>> deleteArticle(ArticleEntity article);
 }

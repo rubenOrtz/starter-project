@@ -105,4 +105,21 @@ class ArticleRepositoryImpl implements ArticleRepository {
       ));
     }
   }
+
+  @override
+  Future<DataState<void>> deleteArticle(ArticleEntity article) async {
+    try {
+      await _firebaseService.deleteArticle(article.id);
+
+      await removeArticle(article);
+
+      return const DataSuccess(null);
+    } catch (e) {
+      return DataFailed(DioException(
+        error: e.toString(),
+        requestOptions: RequestOptions(path: ''),
+        type: DioExceptionType.unknown,
+      ));
+    }
+  }
 }

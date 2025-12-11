@@ -24,9 +24,8 @@ service cloud.firestore {
       
       // Edit article only if it matches the Vailidty criteria.
       allow update: if isValidArticle();
-      
-      // We dont allow to delete it, at least now.
-      allow delete: if false;
+
+      allow delete: if true;
     }
   }
 }
