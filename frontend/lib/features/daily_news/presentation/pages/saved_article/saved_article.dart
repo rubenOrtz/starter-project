@@ -46,7 +46,7 @@ class SavedArticles extends HookWidget {
         } else if (state is LocalArticlesDone) {
           return _buildArticlesList(state.articles!);
         }
-        return Container();
+        return Container(); // Fallback vacío
       },
     );
   }
