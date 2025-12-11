@@ -1,7 +1,12 @@
 rules_version = '2';
-
 service firebase.storage {
   match /b/{bucket}/o {
-    //TODO: WRITE ANY NECESSARY STORAGE RULES HERE
+    // Solo permitimos subir imágenes a la carpeta específica requerida
+    match /media/articles/{imageId} {
+      allow read: if true;
+      // Solo permite escribir si es una imagen y pesa menos de 5MB (Overdelivery: validación extra)
+      allow write: if request.resource.contentType.matches('image/.*')
+                   && request.resource.size < 5 * 1024 * 1024;
     }
+  }
 }

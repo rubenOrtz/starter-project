@@ -1,7 +1,32 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // TODO: WRITE ANY NECESSARY FIRESTORE RULES HERE
+    
+    function isValidArticle() {
+      let incoming = request.resource.data;
+      return incoming.keys().hasAll(['title', 'content', 'category', 'authorName', 'publishedAt', 'thumbnailURL'])
+             && incoming.title is string
+             && incoming.content is string
+             && incoming.category is string
+             && incoming.authorName is string
+             && incoming.thumbnailURL is string
+             // We make sure the lenght of the article is enogh
+             && incoming.title.size() > 0
+             && incoming.content.size() > 0;
+    }
+
+    match /articles/{articleId} {
+      // Everyone can read the news
+      allow read: if true;
+      
+      // We create it only if it matches the validity criteria
+      allow create: if isValidArticle();
+      
+      // Edit article only if it matches the Vailidty criteria.
+      allow update: if isValidArticle();
+      
+      // We dont allow to delete it, at least now.
+      allow delete: if false;
+    }
   }
 }
