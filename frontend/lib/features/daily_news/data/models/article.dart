@@ -46,17 +46,18 @@ class ArticleModel extends ArticleEntity {
     );
   }
 
-  factory ArticleModel.fromJson(Map < String, dynamic > map) {
+  factory ArticleModel.fromJson(Map<String, dynamic> map) {
     return ArticleModel(
-      id: map['id'] ?? "",
+      id: map['id'] ?? map['url'] ?? "",
       author: map['author'] ?? "",
       title: map['title'] ?? "",
       description: map['description'] ?? "",
       url: map['url'] ?? "",
-      urlToImage: map['urlToImage'] != null && map['urlToImage'] != "" ? map['urlToImage'] : kDefaultImage,
+      urlToImage: map['urlToImage'] != null && map['urlToImage'] != ""
+          ? map['urlToImage']
+          : kDefaultImage,
       publishedAt: map['publishedAt'] ?? "",
       content: map['content'] ?? "",
-      category: map['category'] ?? "",
     );
   }
 

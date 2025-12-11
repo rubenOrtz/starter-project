@@ -23,7 +23,18 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
   final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   sl.registerSingleton<AppDatabase>(database);
-  sl.registerSingleton<Dio>(Dio());
+  final dio = Dio();
+  dio.interceptors.add(InterceptorsWrapper(
+    onResponse: (response, handler) {
+      // Si la respuesta es un Mapa y tiene el campo 'articles' (NewsAPI)
+      if (response.data is Map && response.data.containsKey('articles')) {
+        // Sacamos la lista del envoltorio y la ponemos como datos principales
+        response.data = response.data['articles'];
+      }
+      return handler.next(response);
+    },
+  ));
+  sl.registerSingleton<Dio>(dio);
 
   // --- FIREBASE DEPENDENCIES ---
   sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
